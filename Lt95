@@ -1,0 +1,40 @@
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Solution:
+    def __init__(self):
+        self.root = TrieNode()
+    
+    def insert(self, word):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end = True
+    
+    def search_root(self, word):
+        node = self.root
+        prefix = ""
+        for char in word:
+            if char not in node.children:
+                break
+            node = node.children[char]
+            prefix += char
+            if node.is_end:
+                return prefix
+        return word
+    
+    def replaceWords(self, dictionary, sentence):
+        # Build the Trie from the dictionary
+        for word in dictionary:
+            self.insert(word)
+        
+        # Process the sentence
+        words = sentence.split()
+        replaced_words = [self.search_root(word) for word in words]
+        
+        # Join the words back into a sentence
+        return " ".join(replaced_words)

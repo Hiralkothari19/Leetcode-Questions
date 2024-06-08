@@ -1,0 +1,16 @@
+class Solution:
+    def checkSubarraySum(self, nums: List[int], k: int) -> bool:
+        mod_map = {0: -1}
+        cum_sum = 0
+        
+        for i in range(len(nums)):
+            cum_sum += nums[i]
+            cum_sum %= k
+            
+            if cum_sum in mod_map:
+                if i - mod_map[cum_sum] > 1:
+                    return True
+            else:
+                mod_map[cum_sum] = i
+        
+        return False

@@ -1,0 +1,28 @@
+class Solution:
+    def getAncestors(self, n: int, edges: List[List[int]]) -> List[List[int]]:
+        # keep track of unique ancestors
+        answer = [set() for _ in range(n)]
+
+        # build the reversed graph
+        g = [[] for _ in range(n)]
+        for f, t in edges:
+            g[t].append(f)
+
+        q0 = []
+        q1 = []
+        # run BFS in reverse from each node
+        for start, ancestors in enumerate(answer):
+            for prev in g[start]:
+                q0.append(prev)
+            while q0:
+                for cur in q0:
+                    if cur not in ancestors:
+                        ancestors.add(cur)
+                        for prev in g[cur]:
+                            q1.append(prev)
+                q1, q0 = q0, q1
+                q1.clear()
+        # finall sort the ancestors
+        for i, ancestors in enumerate(answer):
+            answer[i] = sorted(ancestors)
+        return answer

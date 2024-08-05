@@ -1,0 +1,3 @@
+class Solution:
+    def kthDistinct(self, a: List[str], k: int) -> str:
+        return (f:=lambda i,k,c=Counter(a):(q:=c[a[i]]<2) and k<2 and a[i] or f(i+1,k-q) if a[i:] else '')(0,k)

@@ -1,0 +1,57 @@
+class Solution:
+    def spiralMatrixIII(self, rows: int, cols: int, rStart: int, cStart: int) -> List[List[int]]:
+        
+        direction=1
+        lst=[]
+        
+        pos=[rStart,cStart]
+
+        lst.append(pos)
+
+        movement=1
+
+        while(len(lst)<rows*cols):
+
+            if direction==1:
+                c=0
+                while c<movement:
+                    cStart=cStart+1
+                    pos=[rStart,cStart]
+                    if rStart>=0 and rStart<rows and cStart>=0 and cStart<cols: 
+                        lst.append(pos)
+                    c+=1
+                direction=2
+           
+            if direction==2:
+                c=0
+                while c<movement:
+                    rStart=rStart+1
+                    pos=[rStart,cStart]
+                    if rStart>=0 and rStart<rows and cStart>=0 and cStart<cols:
+                        lst.append(pos)
+                    c+=1
+                direction=3
+                movement+=1
+           
+            if direction==3:
+                c=0
+                while c<movement:
+                    cStart=cStart-1
+                    pos=[rStart,cStart]
+                    if rStart>=0 and rStart<rows and cStart>=0 and cStart<cols: 
+                        lst.append(pos)
+                    c+=1
+                direction=4
+          
+            if direction==4:
+                c=0
+                while c<movement:
+                    rStart=rStart-1
+                    pos=[rStart,cStart]
+                    if rStart>=0 and rStart<rows and cStart>=0 and cStart<cols:
+                        lst.append(pos)
+                    c+=1
+                direction=1
+                movement+=1
+          
+        return lst

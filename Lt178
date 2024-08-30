@@ -1,0 +1,103 @@
+class Solution:
+    def modifiedGraphEdges(self, n: int, edges: List[List[int]], source: int, destination: int, target: int) -> List[List[int]]:
+        flexEdgeLookup = dict()
+        g = [dict() for _ in range(n)]
+
+        for i, (u, v, w) in enumerate(edges):
+            if w == -1:
+                w = 1
+                if u < v:
+                    flexEdgeLookup[u, v] = i
+                else:
+                    flexEdgeLookup[v, u] = i
+            else:
+                g[u][v] = w
+                g[v][u] = w
+        dists = dict()
+        pq = []
+        parent = dict()
+        def runDjikstra():
+            nonlocal g, dists, pq, parent
+            dists.clear()
+            dists[source] = 0
+            pq.clear()
+            pq.append((0, source))
+            parent.clear()
+            while pq:
+                curDist, cur = heappop(pq)
+                if dists[cur] == curDist:
+                    if cur == destination:
+                        break
+                    else:
+                        for nxt, w in g[cur].items():
+                            w += curDist
+                            if w <= target and (nxt not in dists or w < dists[nxt]):
+                                parent[nxt] = cur
+                                dists[nxt] = w
+                                heappush(pq, (w, nxt))
+
+        # Run without flexible edges
+        runDjikstra()
+        if (destination in dists) and dists[destination] < target:
+            # shorter path already exists, no point adding more edges, no target path
+            return []
+        if (destination in dists) and dists[destination] == target:
+            # Found the path exactly on target
+            for i in flexEdgeLookup.values():
+                # make all flexible edges useless, no need for them
+                edges[i][2] = target + 1
+            return edges
+
+        # turn on all flex edges, each must have a least 1 cost
+        for u, v in flexEdgeLookup:
+            g[u][v] = 1
+            g[v][u] = 1
+        
+        # Run Dijskstra with all those flex edges on
+        runDjikstra()
+        if (destination not in dists):
+            # destination is still unreachable, no solution
+            return []
+        if dists[destination] == target:
+            # destination is exactly reacheable, solution
+            for i in flexEdgeLookup.values():
+                edges[i][2] = 1
+            return edges
+
+        # turn off all edges
+        for (u, v), i in flexEdgeLookup.items():
+            g[u][v] = target + 1
+            g[v][u] = target + 1
+            edges[i][2] = target + 1
+        
+
+        while True:
+            # for every Djikstra run, try to adjust the weight of one of the flex edges on the path
+            cur = destination
+            lastIndex = -1
+            while cur != source:
+                prev = parent[cur]
+                if prev < cur:
+                    u, v = prev, cur
+                else:
+                    u, v = cur, prev
+                try:
+                    lastIndex = flexEdgeLookup[u, v]
+                    edges[lastIndex][2] = 1
+                    g[v][u] = 1
+                    g[u][v] = 1
+                except KeyError:
+                    pass
+                cur = prev
+            edges[lastIndex][2] += target - dists[destination]
+            u, v = sorted(edges[lastIndex][:2])
+            g[v][u] += target - dists[destination]
+            g[u][v] += target - dists[destination]
+            # remove this edge
+            del flexEdgeLookup[u, v]
+            # rerun Djiskstra to make sure no shorter path left behind
+            runDjikstra()
+            if dists[destination] == target:
+                break
+
+        return edges    

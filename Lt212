@@ -1,0 +1,22 @@
+import java.util.*;
+
+class Solution {
+  public int minGroups(int[][] intervals) {
+    // 1. Sort meetings by start time
+    Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+    PriorityQueue<Integer> pq = new PriorityQueue<>();
+
+    // 2. Iterate through meetings
+    for (int[] interval : intervals) {
+      // 3.a. Check if a room is available (ending time before current start)
+      if (!pq.isEmpty() && pq.peek() < interval[0]) {
+        pq.poll(); // Remove ending time of a finished meeting
+      }
+      // 3.b. Add current meeting's end time regardless (might be a new room)
+      pq.offer(interval[1]);
+    }
+
+    // 4. Minimum rooms = number of currently occupied rooms
+    return pq.size();
+  }
+}

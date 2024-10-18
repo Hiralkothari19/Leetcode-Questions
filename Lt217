@@ -1,0 +1,31 @@
+class Solution {
+    void solve(int[] nums, ArrayList<Integer> temp, int idx, int n, int curror, int maxor, int[] count) {
+        // at the end of recursion check if the subsequemce or is equal to maxor 
+        if (idx>=n&&curror == maxor) {
+            count[0]++;
+        }
+        // if not then it will return 
+        if (idx >= n) return;
+        // backtracking template
+
+        // Include current number
+        temp.add(nums[idx]);
+        solve(nums, temp, idx + 1, n, curror | nums[idx], maxor, count);// do the or of every element on each call 
+        temp.remove(temp.size() - 1);
+        // Exclude current number
+        solve(nums, temp, idx + 1, n, curror, maxor, count);
+    }
+
+    public int countMaxOrSubsets(int[] nums) {
+        int n = nums.length;
+        ArrayList<Integer> temp = new ArrayList<>();
+        int[] count = new int[1]; // Use an array to pass by reference
+        int maxor = 0;
+        // maxor is the of of whole array 
+        for (int i : nums) {
+            maxor = maxor | i;
+        }
+        solve(nums, temp, 0, n, 0, maxor, count);
+        return count[0];
+    }
+}

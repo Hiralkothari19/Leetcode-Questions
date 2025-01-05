@@ -1,0 +1,31 @@
+class Solution {
+    public String shiftingLetters(String s, int[][] shifts) {
+        int sLength = s.length(), shiftLength = shifts.length;
+        int changes[][] = new int[2 * shiftLength][3], j = 0;
+        for(int i = 0; i < shiftLength; i++) {
+            int[] shift = shifts[i];
+            int variation = shift[2] == 1 ? 1 : -1;
+            changes[j++] = new int[]{shift[0], variation, i, 0};
+            changes[j++] = new int[]{shift[1] + 1, variation, i, 1};
+        }
+        Arrays.sort(changes, (a, b) -> a[0] - b[0]);
+        j = 0;
+        int changeBy[] = new int[sLength], variation = 0;
+        for(int change[] : changes) {
+            while(j < change[0]) {
+                changeBy[j++] = variation;
+            }
+            if(change[3] == 0)
+                variation = (variation + change[1] + 26) % 26;
+            else
+                variation = (variation - change[1] + 26) % 26;
+        }
+        StringBuilder ans = new StringBuilder();
+        for(int i = 0; i < sLength; i++) {
+            int asci = s.charAt(i) - 'a';
+            int modified = (asci + changeBy[i] + 26) % 26;
+            ans.append((char)('a' + modified));
+        }
+        return ans.toString();
+    }
+}
